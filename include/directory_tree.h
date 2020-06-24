@@ -29,7 +29,7 @@ typedef struct {
 node_t *init_file_node(const char *name, uint64_t size);
 node_t *init_directory_node(const char *name);
 
-void add_file(node_t *node, char *path, uint64_t size);
+void add_file(directory_node_t *dnode, char *path, uint64_t size);
 void print_directory_tree(node_t *node);
 void free_directory_tree(node_t *node);
 

@@ -4,9 +4,10 @@
 #include "directory_tree.h"
 
 void add_empty_file(node_t *root, const char *filename) {
+    assert(root->type == DIRECTORY_TYPE);
     char *filename_copy = strdup(filename);
     assert(filename != NULL);
-    add_file(root, filename_copy, 0);
+    add_file((directory_node_t *) root, filename_copy, 0);
     free(filename_copy);
 }
 

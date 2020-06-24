@@ -34,9 +34,9 @@ void add_child_node(directory_node_t *dnode, node_t *child) {
     (void) child;
 }
 
-void add_file(node_t *node, char *path, uint64_t size) {
+void add_file(directory_node_t *dnode, char *path, uint64_t size) {
     // TODO: Implement me!
-    (void) node;
+    (void) dnode;
     (void) path;
     (void) size;
 }
