@@ -1,22 +1,26 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "directory_tree.h"
 
-#define F(str) s = malloc(sizeof(char *)*(strlen(str) + 1)); strcpy(s, str); add_file(root, s, 0); free(s); 
+void add_empty_file(node_t *root, const char *filename) {
+    char *filename_copy = strdup(filename);
+    assert(filename != NULL);
+    add_file(root, filename_copy, 0);
+    free(filename_copy);
+}
 
 int main(void) {
     node_t *root = init_directory_node("");
-    char *s;
-    F("a/b/c/c");
-    F("a/b/c/a");
-    F("a/b/c/e");
-    F("a/b/c/b");
-    F("a/b/c/d");
-    F("a/b/d/d");
-    F("a/b/d/a");
-    F("a/b/d/b");
-    F("a/b/d/c");
+    add_empty_file(root, "a/b/c/c");
+    add_empty_file(root, "a/b/c/a");
+    add_empty_file(root, "a/b/c/e");
+    add_empty_file(root, "a/b/c/b");
+    add_empty_file(root, "a/b/c/d");
+    add_empty_file(root, "a/b/d/d");
+    add_empty_file(root, "a/b/d/a");
+    add_empty_file(root, "a/b/d/b");
+    add_empty_file(root, "a/b/d/c");
     print_directory_tree(root);
     free_directory_tree(root);
 }

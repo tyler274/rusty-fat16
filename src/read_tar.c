@@ -1,9 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "directory_tree.h"
 
@@ -30,15 +26,15 @@ typedef struct __attribute__((__packed__)) {
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "USAGE: %s <filename>\n", argv[0]);
-        exit(1);
+        return 1;
     }
 
     node_t *root = init_directory_node("");
 
-    FILE *f = fopen(argv[1], "rb");
-    tar_header_t buf;
-    (void)buf;
-    
+    FILE *f = fopen(argv[1], "r");
+    tar_header_t header;
+    (void) header;
+
     // TODO: Implement me!
 
     fclose(f);
