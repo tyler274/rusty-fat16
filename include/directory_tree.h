@@ -17,6 +17,7 @@ typedef struct {
 typedef struct {
     node_t base;
     uint64_t size;
+    char *contents;
 } file_node_t;
 
 typedef struct {
@@ -26,11 +27,13 @@ typedef struct {
 } directory_node_t;
 
 
-node_t *init_file_node(const char *name, uint64_t size);
-node_t *init_directory_node(const char *name);
+file_node_t *init_file_node(char *name, uint64_t size, char *contents);
+directory_node_t *init_directory_node(char *name);
 
-void add_file(directory_node_t *dnode, char *path, uint64_t size);
+void add_child_directory_tree(directory_node_t *dnode, node_t *child);
+
 void print_directory_tree(node_t *node);
+void create_directory_tree(node_t *node);
 void free_directory_tree(node_t *node);
 
 #endif /* DIRECTORY_TREE_H */

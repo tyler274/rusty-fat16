@@ -1,19 +1,19 @@
 CC = clang-with-asan
 CFLAGS = -Iinclude -Wall -Wextra -g
 
-BINS = bin/fake_tar bin/read_tar
+BINS = bin/fake bin/recover
 
 all: $(BINS)
 
 out/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-bin/fake_tar: out/fake_tar.o out/directory_tree.o
+bin/fake: out/fake.o out/directory_tree.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-bin/read_tar: out/read_tar.o out/directory_tree.o
+bin/recover: out/recover.o out/fat16.o out/directory_tree.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 
 clean:
-	rm -f out/* bin/* 
+	rm -f out/* bin/* ROOT
