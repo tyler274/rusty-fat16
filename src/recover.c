@@ -19,18 +19,22 @@ void follow(FILE *disk, directory_node_t *node, bios_parameter_block_t bpb) {
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "USAGE: %s <filename>\n", argv[0]);
+        fprintf(stderr, "USAGE: %s <image filename>\n", argv[0]);
         exit(1);
     }
 
     FILE *disk = fopen(argv[1], "rb");
 
-    /* TODO: Initialize me  and read from the disk. */
     bios_parameter_block_t bpb = {0};
+    
+    /* TODO: Write your code here. */
+
 
     directory_node_t *root = init_directory_node(""); 
     follow(disk, root, bpb);
     print_directory_tree((node_t *)root);
     create_directory_tree((node_t *)root);
     free_directory_tree((node_t *)root);
+    
+    fclose(disk);
 }
