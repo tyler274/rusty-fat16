@@ -4,10 +4,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-typedef enum {
-    FILE_TYPE,
-    DIRECTORY_TYPE
-} node_type_t;
+typedef enum { FILE_TYPE, DIRECTORY_TYPE } node_type_t;
 
 typedef struct {
     node_type_t type;
@@ -16,8 +13,8 @@ typedef struct {
 
 typedef struct {
     node_t base;
-    uint64_t size;
-    char *contents;
+    size_t size;
+    uint8_t *contents;
 } file_node_t;
 
 typedef struct {
@@ -26,8 +23,7 @@ typedef struct {
     node_t **children;
 } directory_node_t;
 
-
-file_node_t *init_file_node(char *name, uint64_t size, char *contents);
+file_node_t *init_file_node(char *name, size_t size, uint8_t *contents);
 directory_node_t *init_directory_node(char *name);
 
 void add_child_directory_tree(directory_node_t *dnode, node_t *child);

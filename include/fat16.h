@@ -1,6 +1,10 @@
 #ifndef FAT16_H
 #define FAT16_H
 
+#include <inttypes.h>
+#include <stdbool.h>
+#include <stddef.h>
+
 typedef struct __attribute__((__packed__)) {
     uint16_t bytes_per_sector;
     uint8_t sectors_per_cluster;
@@ -28,9 +32,9 @@ typedef struct __attribute__((__packed__)) {
 } directory_entry_t;
 
 size_t get_root_directory_location(bios_parameter_block_t bpb);
-size_t get_offset_from_cluster(uint16_t cluster, bios_parameter_block_t bpb);
-bool is_directory(directory_entry_t d);
-bool is_hidden(directory_entry_t d);
-char *get_file_name(char *filename, char *extension);
+size_t get_offset_from_cluster(size_t cluster, bios_parameter_block_t bpb);
+bool is_directory(directory_entry_t entry);
+bool is_hidden(directory_entry_t entry);
+char *get_file_name(directory_entry_t entry);
 
 #endif /* FAT16_H */
