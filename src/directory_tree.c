@@ -7,15 +7,15 @@
 #include "directory_tree.h"
 
 void init_node(node_t *node, char *name, node_type_t type) {
-    if (!strlen(name)) {
+    if (name == NULL) {
         name = strdup("ROOT");
+        assert(name != NULL);
     }
     node->name = name;
-    assert(node->name != NULL);
     node->type = type;
 }
 
-file_node_t *init_file_node(char *name, uint64_t size, char *contents) {
+file_node_t *init_file_node(char *name, size_t size, uint8_t *contents) {
     file_node_t *node = malloc(sizeof(file_node_t));
     assert(node != NULL);
     init_node((node_t *) node, name, FILE_TYPE);
@@ -34,33 +34,31 @@ directory_node_t *init_directory_node(char *name) {
 }
 
 void add_child_directory_tree(directory_node_t *dnode, node_t *child) {
-    (void)dnode;
-    (void)child;
+    (void) dnode;
+    (void) child;
 }
 
 void print_directory_tree(node_t *node) {
-    (void)node;
+    (void) node;
 }
 
-
 void create_directory_tree(node_t *node) {
-    (void)node;
+    (void) node;
 }
 
 void free_directory_tree(node_t *node) {
     if (node->type == FILE_TYPE) {
-        file_node_t *fnode = (file_node_t *)node;
-        free(node->name);
+        file_node_t *fnode = (file_node_t *) node;
         free(fnode->contents);
-        free(node);
     }
     else {
-        directory_node_t *dnode = (directory_node_t *)node;
+        assert(node->type == DIRECTORY_TYPE);
+        directory_node_t *dnode = (directory_node_t *) node;
         for (size_t i = 0; i < dnode->num_children; i++) {
             free_directory_tree(dnode->children[i]);
         }
-        free(node->name);
         free(dnode->children);
-        free(node);
     }
+    free(node->name);
+    free(node);
 }
