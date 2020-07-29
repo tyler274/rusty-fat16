@@ -1,2 +1,2 @@
-pretest:
+disk:
     script: "/testers/cs24/project00/disk/test"
