@@ -34,5 +34,5 @@ int main(int argc, char *argv[]) {
     create_directory_tree((node_t *) root);
     free_directory_tree((node_t *) root);
 
-    fclose(disk);
+    assert(fclose(disk) == 0);
 }
