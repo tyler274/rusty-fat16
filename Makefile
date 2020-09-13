@@ -16,8 +16,7 @@ bin/recover: out/recover.o out/fat16.o out/directory_tree.o
 
 tests/%-actual.txt tests/%-actual-files: bin/test_tree tests/%-input.txt
 	rm -rf $(@:.txt=-files)
-	mkdir $(@:.txt=-files)
-	cd $(@:.txt=-files) && $(patsubst %,../../%,$^) > ../../$(@:-files=.txt)
+	$^ $(@:.txt=-files) > $(@:-files=.txt)
 
 tests/%-expected-files: tests/%-expected-files.tar.gz
 	rm -rf $@
