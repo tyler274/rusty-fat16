@@ -88,10 +88,9 @@ void print_directory_tree(node_t *node);
 
 /**
  * Creates all files and directories in a directory tree.
- * The files are created relative to the current working directory.
+ * The files and directories are created relative to the current working directory.
  *
  * @param node the root of the directory tree. You may assume this is a directory node.
- *   The root represents the current working directory, so it does not need to be created.
  */
 void create_directory_tree(node_t *node);
 
