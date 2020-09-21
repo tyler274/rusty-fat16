@@ -39,6 +39,7 @@ recovery: bin/recover usb.dmg
 
 clean:
 	rm -rf out/* bin/* tests/*-actual* tests/*-expected-files usb.dmg recovery
+	touch bin/leaks.supp
 
 .PRECIOUS: out/%.o bin/test_tree bin/recover \
 	tests/%-actual.txt tests/%-actual-files tests/%-expected-files \
