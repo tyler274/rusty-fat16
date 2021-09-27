@@ -30,7 +30,7 @@ tests/%-expected-files: tests/%-expected-files.tar.gz
 test: $(TESTS)
 
 usb.dmg:
-	curl "https://com.puter.systems/20fa/projects/assets/00/usb.dmg" -o $@
+	curl "https://com.puter.systems/21fa/projects/assets/00/usb.dmg" -o $@
 
 recovery: bin/recover usb.dmg
 	rm -rf $@
