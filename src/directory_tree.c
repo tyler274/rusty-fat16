@@ -1,10 +1,10 @@
+#include "directory_tree.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-
-#include "directory_tree.h"
 
 void init_node(node_t *node, char *name, node_type_t type) {
     if (name == NULL) {
@@ -33,12 +33,39 @@ directory_node_t *init_directory_node(char *name) {
     return node;
 }
 
+int compare_inodes(const void *v1, const void *v2) {
+    const node_t *p1 = (node_t *) v1;
+    const node_t *p2 = (node_t *) v2;
+
+    return strcmp(p1->name, p2->name);
+}
+
 void add_child_directory_tree(directory_node_t *dnode, node_t *child) {
+    dnode->num_children += 1;
+    dnode->children = realloc(dnode->children, dnode->num_children * sizeof(node_t *));
+    dnode->children[dnode->num_children - 1] = child;
+    qsort(dnode->children, dnode->num_children - 1, sizeof(node_t *), compare_inodes);
+    // printf("added inode: %s", dnode->children[dnode->num_children - 1]->name);
     (void) dnode;
     (void) child;
 }
 
 void print_directory_tree(node_t *node) {
+    printf("ROOT\n");
+    size_t index = 0;
+    if (node != NULL) {
+        if (node->type == DIRECTORY_TYPE) {
+            directory_node_t *cast_node = (directory_node_t *) node;
+            // printf("%zu", cast_node->num_children);
+            for (index; index < cast_node->num_children; index++) {
+                printf("    %s\n", (cast_node->children)[index]->name);
+            }
+        }
+        else {
+            assert(node->type == FILE_TYPE);
+            printf("    %s\n", node->name);
+        }
+    }
     (void) node;
 }
 

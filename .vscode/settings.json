@@ -1,5 +1,19 @@
 {
     "files.exclude": {
         "**/.git": true
-    }
+    },
+    "files.associations": {
+        "stdio.h": "c",
+        "directory_tree.h": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/tyler274/Code/cs24/project00-tport",
+            "binaryPath": "/home/tyler274/Code/cs24/project00-tport/bin/test_tree",
+            "binaryArgs": [
+                "tests/ascending-input.txt",
+                "tests/ascending-actual-files"
+            ]
+        }
+    ]
 }
