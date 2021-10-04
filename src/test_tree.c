@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
 #include "directory_tree.h"
 
 const unsigned MKDIR_MODE = 0777;

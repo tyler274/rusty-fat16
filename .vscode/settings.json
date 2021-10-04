@@ -14,6 +14,14 @@
                 "tests/ascending-input.txt",
                 "tests/ascending-actual-files"
             ]
+        },
+        {
+            "cwd": "/home/tyler274/Code/cs24/project00-tport",
+            "binaryPath": "/home/tyler274/Code/cs24/project00-tport/bin/test_tree",
+            "binaryArgs": [
+                "tests/descending-input.txt",
+                "tests/descending-actual-files"
+            ]
         }
     ]
 }

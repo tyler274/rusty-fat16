@@ -17,6 +17,7 @@ typedef struct {
     node_type_t type;
     /** The name of the file or directory */
     char *name;
+    size_t name_size;
 } node_t;
 
 /** A node representing a file in a directory tree */
