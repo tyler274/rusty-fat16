@@ -4,7 +4,8 @@
     },
     "files.associations": {
         "stdio.h": "c",
-        "directory_tree.h": "c"
+        "directory_tree.h": "c",
+        "assert.h": "c"
     },
     "makefile.launchConfigurations": [
         {
