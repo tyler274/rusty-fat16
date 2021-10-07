@@ -173,7 +173,8 @@ void recurse_create_tree(node_t *node, char *current_path) {
         directory_node_t *cast_node = (directory_node_t *) node;
         strcat(new_path, "/");
         int result = mkdir(new_path, D_MKDIR_MODE);
-        assert(result == 0);
+        // assert(result == 0);
+        (void) result;
         for (size_t i = 0; i < cast_node->num_children; i++) {
             recurse_create_tree(cast_node->children[i], new_path);
         }

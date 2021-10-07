@@ -21,48 +21,73 @@ void recurse_follow(FILE *disk, directory_entry_t *entry, directory_node_t *node
             node->children =
                 realloc(node->children, sizeof(node_t *) * (node->num_children + 1));
 
-            directory_entry_t *disk_entries = malloc(entry[entry_index].file_size);
+            directory_entry_t *disk_dir_entry = malloc(sizeof(directory_entry_t));
             fseek(disk, get_offset_from_cluster(entry[entry_index].first_cluster, *bpb),
                   SEEK_SET);
-            fread(disk_entries, sizeof(uint8_t), entry[entry_index].file_size, disk);
 
             if (strcmp(get_file_name(entry[entry_index]), "\0") != 0) {
                 node->children[node->num_children] =
                     (node_t *) init_directory_node(get_file_name(entry[entry_index]));
-                // now read this init'd node's child directories from the file
+                // now read this init'd node's child directories from
+                // the file and recurse
+
+                // size_t i = 0;
+                while (disk_dir_entry != NULL) {
+                    fread(disk_dir_entry, sizeof(directory_entry_t), 1, disk);
+                    recurse_follow(
+                        disk, disk_dir_entry,
+                        (directory_node_t *) node->children[node->num_children], bpb, 0);
+                    // i++;
+                }
             }
             else {
-                char *temp_name = malloc(sizeof(char) * 8);
-                sprintf(temp_name, "%zu", entry_index);
+                char *temp_name = malloc(sizeof(char) * 16);
+                sprintf(temp_name, "%zu", entry_index + rand());
                 // directory_node_t *temp_dir = init_directory_node(temp_name);
                 node->children[node->num_children] =
                     (node_t *) init_directory_node(temp_name);
                 free(temp_name);
 
-                recurse_follow(disk, entry,
-                               (directory_node_t *) node->children[node->num_children],
-                               bpb, entry_index + 1);
+                // recurse down this directory's child entries
+                // size_t i = 0;
+                while (disk_dir_entry != NULL) {
+                    fread(disk_dir_entry, sizeof(directory_entry_t), 1, disk);
+                    recurse_follow(
+                        disk, disk_dir_entry,
+                        (directory_node_t *) node->children[node->num_children], bpb, 0);
+                    // i++;
+                }
             }
             node->num_children++;
+            free(disk_dir_entry);
         }
         else {
             // if its a file
+
+            // allocate more space for another node
             node->children =
                 realloc(node->children, sizeof(node_t *) * (node->num_children + 1));
-            uint8_t *file_contents = malloc(entry[entry_index].file_size);
+
+            // Allocate a buffer for this file's contents
+            uint8_t *file_contents = calloc(1, entry[entry_index].file_size);
             fseek(disk, get_offset_from_cluster(entry[entry_index].first_cluster, *bpb),
                   SEEK_SET);
+
+            // Read the contents of that file into the buffer.
             fread(file_contents, sizeof(uint8_t), entry[entry_index].file_size, disk);
             if (strcmp(get_file_name(entry[entry_index]), "\0") != 0) {
-                // node->children[node->num_children] = (node_t *) init_file_node(
-                //     get_file_name(entry[entry_index]), entry[entry_index].file_size,
-                //     entry[entry_index].first_cluster);
+                node->children[node->num_children] = (node_t *) init_file_node(
+                    get_file_name(entry[entry_index]), entry[entry_index].file_size,
+                    file_contents);
             }
             else {
-                char *temp_name = malloc(sizeof(char) * 8);
+                char *temp_name = malloc(sizeof(char) * 16);
                 sprintf(temp_name, "%zu.pdf", entry_index);
                 // file_node_t temp_file = init_file_node(temp_name);
                 // node->children[node->num_children] = (node_t *) temp_file;
+                node->children[node->num_children] = (node_t *) init_file_node(
+                    get_file_name(entry[entry_index]), entry[entry_index].file_size,
+                    file_contents);
                 free(temp_name);
             }
             node->num_children++;
