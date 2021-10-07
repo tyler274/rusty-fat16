@@ -17,64 +17,60 @@ void recurse_follow(FILE *disk, directory_entry_t entry, directory_node_t *node,
     if (!is_hidden(entry)) {
         // only follow up if the entry isn't hidden.
         char *file_name = get_file_name(entry);
+        // printf("%s\n", file_name);
         fseek(disk, get_offset_from_cluster(entry.first_cluster, *bpb), SEEK_SET);
 
         if (is_directory(entry)) {
             // if the entry is a directory follow this branch.
-            node->children =
-                realloc(node->children, sizeof(node_t *) * (node->num_children + 1));
 
-            directory_entry_t *disk_dir_entry = malloc(sizeof(directory_entry_t));
+            directory_entry_t *disk_dir_entry = calloc(1, sizeof(directory_entry_t));
             fread(disk_dir_entry, sizeof(directory_entry_t), 1, disk);
 
             if (strcmp(file_name, "\0") != 0) {
                 // if the directory name isn't a null terminator, then we can use its
                 // actual name
-                node->children[node->num_children] =
-                    (node_t *) init_directory_node(file_name);
-                // now read this init 'd node' s child directories from the file and
+                add_child_directory_tree(node, (node_t *) init_directory_node(file_name));
+                // now read this inited nodes child directories from the file and
                 // recurse
 
-                recurse_follow(disk, *disk_dir_entry,
-                               (directory_node_t *) node->children[node->num_children],
-                               bpb);
+                bool is_null = false;
+                size_t sibling_count = 0;
+
+                while (is_null == false) {
+                    recurse_follow(
+                        disk, *disk_dir_entry,
+                        (directory_node_t *) node->children[node->num_children - 1], bpb);
+                    fseek(disk,
+                          get_offset_from_cluster(entry.first_cluster, *bpb) +
+                              (sizeof(directory_entry_t) * sibling_count),
+                          SEEK_SET);
+                    fread(disk_dir_entry, sizeof(directory_entry_t), 1, disk);
+                    char *temp_name = get_file_name(*disk_dir_entry);
+                    // printf("%s", temp_name);
+                    if (strcmp(temp_name, "\0") == 0) {
+                        is_null = true;
+                    }
+                    sibling_count++;
+                    free(temp_name);
+                }
             }
-            else {
-                char *temp_name = malloc(sizeof(char) * 16);
-                sprintf(temp_name, "%d", rand());
-                node->children[node->num_children] =
-                    (node_t *) init_directory_node(temp_name);
-                recurse_follow(disk, *disk_dir_entry,
-                               (directory_node_t *) node->children[node->num_children],
-                               bpb);
-            }
-            node->num_children++;
+
             free(disk_dir_entry);
         }
         else {
             // if its a file follow this branch
 
-            // allocate more space for another node
-            node->children =
-                realloc(node->children, sizeof(node_t *) * (node->num_children + 1));
-
             // Allocate a buffer for this file's contents
-            uint8_t *file_contents = malloc(entry.file_size);
+            uint8_t *file_contents = calloc(1, entry.file_size);
 
             // Read the contents of that file into the buffer.
+            // printf("%s", file_name);
             fread(file_contents, sizeof(uint8_t), entry.file_size, disk);
             if (strcmp(file_name, "\0") != 0) {
-                node->children[node->num_children] =
-                    (node_t *) init_file_node(file_name, entry.file_size, file_contents);
+                add_child_directory_tree(
+                    node,
+                    (node_t *) init_file_node(file_name, entry.file_size, file_contents));
             }
-            else {
-                char *temp_name = malloc(sizeof(char) * 16);
-                sprintf(temp_name, "%d.pdf", rand());
-                node->children[node->num_children] =
-                    (node_t *) init_file_node(file_name, entry.file_size, file_contents);
-                // free(temp_name);
-            }
-            node->num_children++;
         }
     }
     else {
@@ -86,7 +82,7 @@ void recurse_follow(FILE *disk, directory_entry_t entry, directory_node_t *node,
 void follow(FILE *disk, directory_node_t *node, bios_parameter_block_t bpb) {
     // directory_entry_t *cast_entry = (directory_entry_t *) disk;
     fseek(disk, get_root_directory_location(bpb), SEEK_SET);
-    directory_entry_t *cast_entry = malloc(sizeof(directory_entry_t) * 512);
+    directory_entry_t *cast_entry = calloc(512, sizeof(directory_entry_t));
     size_t read_disk = fread(cast_entry, sizeof(directory_entry_t), 512, disk);
     assert(read_disk == 512);
     for (size_t i = 0; i < 512; i++) {
