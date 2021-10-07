@@ -27,7 +27,7 @@
             ]
         },
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) test_tree",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/test_tree",
