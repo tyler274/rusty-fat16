@@ -185,7 +185,9 @@ void recurse_create_tree(node_t *node, char *current_path) {
         FILE *current_file = fopen(new_path, "w+");
         assert(current_file != NULL);
 
-        fwrite(cast_node->contents, sizeof(uint8_t), cast_node->size, current_file);
+        size_t written =
+            fwrite(cast_node->contents, sizeof(uint8_t), cast_node->size, current_file);
+        assert(written == cast_node->size);
 
         int close_result = fclose(current_file);
         assert(close_result == 0);
