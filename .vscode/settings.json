@@ -4,7 +4,8 @@
     },
     "files.associations": {
         "stdio.h": "c",
-        "directory_tree.h": "c"
+        "directory_tree.h": "c",
+        "assert.h": "c"
     },
     "makefile.launchConfigurations": [
         {
@@ -22,6 +23,11 @@
                 "tests/descending-input.txt",
                 "tests/descending-actual-files"
             ]
+        },
+        {
+            "cwd": "/home/tport/cs24/project00-tport/bin",
+            "binaryPath": "/home/tport/cs24/project00-tport/bin/recover",
+            "binaryArgs": []
         }
     ]
 }

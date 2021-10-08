@@ -5,6 +5,51 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(gdb) recover",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/recover",
+            "args": [
+                "../usb.dmg"
+            ],
+            "preLaunchTask": "clang make recovery",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/recovery",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) test_tree",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/test_tree",
+            "args": [
+                "tests/ascending-input.txt",
+                "tests/ascending-actual-files"
+            ],
+            "preLaunchTask": "clang make test_tree",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "lldb debug test_tree",
