@@ -13,6 +13,7 @@
 
 const size_t MASTER_BOOT_RECORD_SIZE = 0x20B;
 const size_t FILE_ALLOCATION_TABLES_SIZE = 78 * 512;
+const size_t DIRECTORY_COUNT = 512;
 
 void follow_file_branch(FILE *disk, directory_entry_t entry, directory_node_t *node,
                         bios_parameter_block_t *bpb) {
@@ -101,10 +102,11 @@ void follow(FILE *disk, directory_node_t *node, bios_parameter_block_t bpb) {
     // directory_entry_t *cast_entry = (directory_entry_t *) disk;
     int seek_result = fseek(disk, get_root_directory_location(bpb), SEEK_SET);
     assert(seek_result == 0);
-    directory_entry_t *cast_entry = calloc(512, sizeof(directory_entry_t));
-    size_t read_disk = fread(cast_entry, sizeof(directory_entry_t), 512, disk);
-    assert(read_disk == 512);
-    for (size_t i = 0; i < 512; i++) {
+    directory_entry_t *cast_entry = calloc(DIRECTORY_COUNT, sizeof(directory_entry_t));
+    size_t read_disk =
+        fread(cast_entry, sizeof(directory_entry_t), DIRECTORY_COUNT, disk);
+    assert(read_disk == DIRECTORY_COUNT);
+    for (size_t i = 0; i < DIRECTORY_COUNT; i++) {
         recurse_follow(disk, cast_entry[i], node, &bpb);
     }
 
