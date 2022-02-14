@@ -4,8 +4,8 @@ use std::{fmt::Display, io::Write, os::unix::prelude::PermissionsExt};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Node {
-    name: Vec<u8>,
-    node: NodeT,
+    pub name: Vec<u8>,
+    pub node: NodeT,
 }
 
 fn recurse_print_helper(f: &mut std::fmt::Formatter, node: &Node, depth: u64) -> std::fmt::Result {
@@ -39,7 +39,7 @@ impl Display for Node {
 #[derive(Clone, PartialEq, Debug)]
 pub enum NodeT {
     Directory { children: Vec<Node> },
-    File { size: u64, contents: Vec<u8> },
+    File { contents: Vec<u8> },
 }
 
 pub const D_MKDIR_MODE: u32 = 0o777;
@@ -47,14 +47,23 @@ pub const D_MKDIR_MODE: u32 = 0o777;
 // pub const D_PATH_INITIAL_SIZE: u32 = 3;
 
 impl Node {
-    pub fn init_file_node(mut name: &[u8], size: u64, contents: Vec<u8>) -> Node {
+    pub fn is_directory(&self) -> bool {
+        match self.node {
+            NodeT::Directory { .. } => true,
+            NodeT::File { .. } => false,
+        }
+    }
+
+    pub fn init_file_node(mut name: &[u8], contents: &[u8]) -> Node {
         if name.is_empty() {
             name = b"ROOT\x00";
         }
 
         Node {
             name: name.to_vec(),
-            node: NodeT::File { size, contents },
+            node: NodeT::File {
+                contents: contents.to_vec(),
+            },
         }
     }
     pub fn init_directory_node(mut name: &[u8]) -> Node {
@@ -101,7 +110,7 @@ impl Node {
                     Self::recurse_create_tree(child, new_path.as_slice())?;
                 }
             }
-            NodeT::File { size: _, contents } => {
+            NodeT::File { contents } => {
                 let new_path_str: &str = std::str::from_utf8(new_path.as_slice()).unwrap();
                 let mut current_file = std::fs::File::create(new_path_str)?;
                 current_file.write_all(contents)?;

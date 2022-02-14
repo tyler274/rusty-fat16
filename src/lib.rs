@@ -1,2 +1,2 @@
-mod directory_tree;
-mod fat16;
+pub mod directory_tree;
+pub mod fat16;

@@ -63,65 +63,6 @@ void add_child_directory_tree(directory_node_t *dnode, node_t *child) {
     // printf("added inode: %s", dnode->children[dnode->num_children - 1]->name);
 }
 
-// void fill_buffer_by_depth(char **buffer, size_t *line_position, size_t *depth) {
-//     for (size_t i = 0; i < *depth; i += 1) {
-//         // buffer[i] = 0b00100000;
-//         strncpy(&(*buffer)[*line_position], "    ", 4 * sizeof(char));
-//         *line_position += 4;
-//     }
-// }
-
-// #define FAT_PATH_LIMIT 256
-
-// size_t get_output_buffer_line_size(size_t *depth) {
-//     printf("depth: %zu depth_size: %zu\n", *depth,
-//            ((4 * (*depth) + FAT_PATH_LIMIT) * sizeof(char)));
-//     return ((4 * (*depth) + FAT_PATH_LIMIT) * sizeof(char));
-// }
-
-// void recurse_tree(node_t *node, char ***output_buffer, size_t *depth, size_t
-// *line_index,
-//                   size_t *line_position) {
-//     if (node != NULL) {
-//         if (node->type == DIRECTORY_TYPE) {
-//             *line_position = 0;
-
-//             directory_node_t *cast_node = (directory_node_t *) node;
-//             *output_buffer = realloc(
-//                 *output_buffer, sizeof(char *) * (cast_node->num_children +
-//                 *line_index));
-//             (*output_buffer)[*line_index] = malloc(get_output_buffer_line_size(depth));
-//             fill_buffer_by_depth(&(*output_buffer)[*line_index], line_position, depth);
-
-//             strcpy(&((*output_buffer)[*line_index][*line_position]), node->name);
-//             printf("%s", &((*output_buffer)[*line_index][*line_position]));
-//             *depth += 1;
-//             *line_index += 1;
-
-//             for (size_t i = 0; i < cast_node->num_children; i++) {
-//                 recurse_tree(cast_node->children[i], output_buffer, depth, line_index,
-//                              line_position);
-//             }
-//             return;
-//         }
-//         else {
-//             *line_position = 0;
-//             assert(node->type == FILE_TYPE);
-
-//             // file_node_t *cast_node = (file_node_t *) node;
-//             fill_buffer_by_depth(&((*output_buffer)[*line_index]), line_position,
-//             depth); strcpy(&((*output_buffer)[*line_index][*line_position]),
-//             node->name);
-//             // output_buffer[]
-//             return;
-//         }
-//     }
-//     else {
-//         assert(node == NULL);
-//         return;
-//     }
-// }
-
 void recurse_print_helper(node_t *node, size_t depth) {
     for (size_t i = 0; i < depth; i++) {
         printf("    ");
