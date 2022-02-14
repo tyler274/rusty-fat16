@@ -16,13 +16,10 @@ fn recurse_print_helper(f: &mut std::fmt::Formatter, node: &Node, depth: u64) ->
     // TODO: Implement the right conversions for the "?" operator to bubble the utf errors up.
     write!(f, "{}", std::str::from_utf8(&node.name).unwrap())?;
 
-    match &node.node {
-        NodeT::Directory { children } => {
-            for i in 0..children.len() {
-                recurse_print_helper(f, &children[i], depth + 1)?;
-            }
+    if let NodeT::Directory { children } = &node.node {
+        for child in children {
+            recurse_print_helper(f, child, depth + 1)?;
         }
-        _ => (),
     };
 
     Ok(())

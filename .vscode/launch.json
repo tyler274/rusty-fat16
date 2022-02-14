@@ -52,9 +52,26 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "lldb debug test_tree",
+            "name": "(lldb) test_tree",
             "program": "${workspaceFolder}/bin/test_tree",
             "preLaunchTask": "clang make test_tree",
+            "args": [
+                "tests/ascending-input.txt",
+                "tests/ascending-actual-files"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "(lldb) rust test_tree",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=test_tree",
+                ],
+            },
+            "program": "${cargo:program}",
             "args": [
                 "tests/ascending-input.txt",
                 "tests/ascending-actual-files"

@@ -56,9 +56,9 @@ pub const DELETED: u8 = 0xe5;
  */
 pub fn get_root_directory_location(bpb: BiosParameterBlock) -> u64 {
     let fat_sectors: u64 = (bpb.num_fats as u64).wrapping_mul(bpb.sectors_per_fat as u64);
-    return (1 + bpb.reserved_sectors as u64)
+    (1 + bpb.reserved_sectors as u64)
         .wrapping_add(fat_sectors)
-        .wrapping_mul(bpb.bytes_per_sector as u64);
+        .wrapping_mul(bpb.bytes_per_sector as u64)
 }
 
 /**
@@ -69,7 +69,7 @@ pub fn get_root_directory_location(bpb: BiosParameterBlock) -> u64 {
  * @return the index of the byte on the disk where the cluster begins
  */
 pub fn get_offset_from_cluster(cluster: u64, bpb: BiosParameterBlock) -> u64 {
-    return get_root_directory_location(bpb)
+    get_root_directory_location(bpb)
         .wrapping_add(
             (bpb.max_root_entries as u64)
                 .wrapping_mul(std::mem::size_of::<DirectoryEntry>() as u64),
@@ -79,7 +79,7 @@ pub fn get_offset_from_cluster(cluster: u64, bpb: BiosParameterBlock) -> u64 {
                 .wrapping_sub(2_u64)
                 .wrapping_mul(bpb.sectors_per_cluster as u64)
                 .wrapping_mul(bpb.bytes_per_sector as u64),
-        );
+        )
 }
 
 /**
@@ -89,7 +89,7 @@ pub fn get_offset_from_cluster(cluster: u64, bpb: BiosParameterBlock) -> u64 {
  * @return `true` if the entry represents a subdirectory, `false` if it is a file
  */
 pub fn is_directory(entry: DirectoryEntry) -> bool {
-    return (entry.attribute & FatAttribute::SubDirectory as u8) != 0;
+    (entry.attribute & FatAttribute::SubDirectory as u8) != 0
 }
 
 /**
