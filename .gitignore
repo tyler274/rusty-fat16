@@ -5,3 +5,8 @@ tests/*-actual*
 tests/*-expected-files
 usb.dmg
 recovery
+
+
+# Added by cargo
+
+/target
