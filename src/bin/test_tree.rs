@@ -11,7 +11,7 @@ const MKDIR_MODE: u32 = 0o777;
  * This assumes that the directory's entries are sorted by name.
  * Returns None if no matching entry is found.
  */
-pub fn get_child<'a>(directory: &'a Node, name: &[u8]) -> Option<&'a Node> {
+pub fn get_child<'a>(directory: &'a Node, name: &str) -> Option<&'a Node> {
     match &directory.node {
         NodeT::Directory { children } => {
             let mut left: usize = 0;
@@ -19,7 +19,7 @@ pub fn get_child<'a>(directory: &'a Node, name: &[u8]) -> Option<&'a Node> {
             while left < right {
                 let mid = (left + right) / 2;
                 let mid_child = &children[mid];
-                match name.cmp(mid_child.name.as_slice()) {
+                match name.cmp(&mid_child.name) {
                     std::cmp::Ordering::Less => {
                         right = mid;
                     }
@@ -42,25 +42,21 @@ pub fn get_child<'a>(directory: &'a Node, name: &[u8]) -> Option<&'a Node> {
  * Adds a file with the given path and contents to the directory tree.
  * Builds any missing intermediate directories.
  */
-pub fn add_file<'a>(directory: &'a mut Node, path: &[u8], contents: &[u8]) {
-    let mut remaining_path = path.to_vec();
-    let mut new_child: Box<Node>;
+pub fn add_file<'a>(directory: &'a mut Node, path: &str, contents: &[u8]) {
+    let mut remaining_path = path.to_string();
+    // let mut new_child: Box<Node>;
     let mut temp_directory: Box<Node> = Box::new(directory.clone());
     loop {
         // Identify the next file/directory name in the path
-        let slash = remaining_path.iter().position(|&x| x == b'/');
-        if let Some(slash_found) = slash {
-            remaining_path[slash_found] = b'\x00';
-        }
-        let child = get_child(&temp_directory, remaining_path.as_slice());
+        let slash = remaining_path.chars().position(|x| x == '/');
+        // if let Some(slash_found) = slash {
+        //     // remaining_path.split_at(slash_found);
+        // }
+        let child = get_child(&temp_directory, &remaining_path);
 
         if slash.is_none() {
             // This is the last part of the path, so it represents a file
-            assert!(
-                child.is_some(),
-                "File '{}' already exists\n",
-                std::str::from_utf8(path).unwrap()
-            );
+            assert!(child.is_some(), "File '{}' already exists\n", path);
 
             Node::add_child_directory_tree(
                 &mut temp_directory,
@@ -69,7 +65,7 @@ pub fn add_file<'a>(directory: &'a mut Node, path: &[u8], contents: &[u8]) {
             break;
         }
 
-        new_child = Box::new(Node::init_directory_node(&remaining_path));
+        let new_child = Box::new(Node::init_directory_node(&remaining_path));
         // This is an intermediate directory
         if child.is_none() {
             Node::add_child_directory_tree(&mut temp_directory, *new_child.clone());
@@ -80,9 +76,8 @@ pub fn add_file<'a>(directory: &'a mut Node, path: &[u8], contents: &[u8]) {
                 "The child node wasn't a directory\n"
             );
         }
-
         temp_directory = new_child.clone();
-        remaining_path = remaining_path.split_at(slash.unwrap()).1.to_vec();
+        remaining_path = remaining_path.split_at(slash.unwrap()).1[1..].to_string();
     }
 }
 
@@ -94,7 +89,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         "Program should be invoked as \"bin/test_tree test-input-file.txt output-files\""
     );
     let test_input: std::fs::File = std::fs::File::open(&args[1])?;
-    let mut root = Node::init_directory_node(&[]);
+    let mut root = Node::init_directory_node("");
     let line_reader = std::io::BufReader::new(test_input);
     for line in line_reader.lines() {
         /* Separate each line of the input file into path:contents
@@ -104,7 +99,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
         add_file(
             &mut root,
-            r_line[..line_split].as_bytes(),
+            &r_line[..line_split],
             r_line[line_split + 1..].as_bytes(),
         );
     }

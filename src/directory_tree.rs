@@ -4,7 +4,7 @@ use std::{fmt::Display, io::Write, os::unix::prelude::PermissionsExt};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Node {
-    pub name: Vec<u8>,
+    pub name: String,
     pub node: NodeT,
 }
 
@@ -14,7 +14,7 @@ fn recurse_print_helper(f: &mut std::fmt::Formatter, node: &Node, depth: u64) ->
     }
 
     // TODO: Implement the right conversions for the "?" operator to bubble the utf errors up.
-    write!(f, "{}", std::str::from_utf8(&node.name).unwrap())?;
+    write!(f, "{}", &node.name)?;
 
     if let NodeT::Directory { children } = &node.node {
         for child in children {
@@ -51,25 +51,25 @@ impl Node {
         }
     }
 
-    pub fn init_file_node(mut name: &[u8], contents: &[u8]) -> Node {
+    pub fn init_file_node(mut name: &str, contents: &[u8]) -> Node {
         if name.is_empty() {
-            name = b"ROOT\x00";
+            name = "ROOT";
         }
 
         Node {
-            name: name.to_vec(),
+            name: name.to_string(),
             node: NodeT::File {
                 contents: contents.to_vec(),
             },
         }
     }
-    pub fn init_directory_node(mut name: &[u8]) -> Node {
+    pub fn init_directory_node(mut name: &str) -> Node {
         if name.is_empty() {
-            name = b"ROOT\x00";
+            name = "ROOT";
         }
 
         Node {
-            name: name.to_vec(),
+            name: name.to_string(),
             node: NodeT::Directory {
                 children: Vec::new(),
             },
@@ -86,30 +86,26 @@ impl Node {
         }
     }
 
-    fn recurse_create_tree(node: &Node, current_path: &[u8]) -> std::io::Result<()> {
-        let mut new_path = current_path.to_vec();
-        new_path.extend(&node.name);
+    fn recurse_create_tree(node: &Node, current_path: &str) -> std::io::Result<()> {
+        let mut new_path = current_path.to_string();
+        new_path += &node.name;
         match &node.node {
             NodeT::Directory { children } => {
-                new_path.extend(b"/\x00");
-
-                // Convert the completed path into a format the standard lib likes.
-                let new_path_str: &str = std::str::from_utf8(new_path.as_slice()).unwrap();
+                new_path += "/";
 
                 // Create the directory
-                std::fs::create_dir(new_path_str)?;
-                let metadata = std::fs::metadata(new_path_str)?;
+                std::fs::create_dir(&new_path)?;
+                let metadata = std::fs::metadata(&new_path)?;
                 let mut permissions = metadata.permissions();
                 // Set the permissions of the directory
                 permissions.set_mode(D_MKDIR_MODE);
 
                 for child in children {
-                    Self::recurse_create_tree(child, new_path.as_slice())?;
+                    Self::recurse_create_tree(child, &new_path)?;
                 }
             }
             NodeT::File { contents } => {
-                let new_path_str: &str = std::str::from_utf8(new_path.as_slice()).unwrap();
-                let mut current_file = std::fs::File::create(new_path_str)?;
+                let mut current_file = std::fs::File::create(&new_path)?;
                 current_file.write_all(contents)?;
             }
         };
@@ -117,7 +113,7 @@ impl Node {
     }
 
     pub fn create_directory_tree(node: &Node) -> std::io::Result<()> {
-        let current_path = b"./\x00";
+        let current_path = "./";
         Self::recurse_create_tree(node, current_path)
     }
 }
